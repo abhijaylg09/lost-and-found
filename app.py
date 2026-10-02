@@ -8,15 +8,19 @@ from database import get_db, init_db
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# On Vercel, use /tmp for uploads since filesystem is read-only
-if os.environ.get("VERCEL"):
+# On Vercel or read-only filesystems, use /tmp for uploads
+if os.environ.get("VERCEL") or not os.access(BASE_DIR, os.W_OK):
     UPLOAD_FOLDER = "/tmp/uploads"
 else:
     UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
 
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 
-os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+try:
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+except Exception:
+    UPLOAD_FOLDER = "/tmp/uploads"
+    os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
 app = Flask(__name__, static_folder=BASE_DIR, static_url_path="")
 app.secret_key = "lost-and-found-super-secret-key-change-in-production"

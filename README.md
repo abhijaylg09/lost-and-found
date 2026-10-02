@@ -93,7 +93,11 @@ lost-and-found/
 ├── app.py                # Flask server, REST API endpoints, and routing
 ├── database.py           # SQLite schema initialization & seed data
 ├── requirements.txt      # Python dependencies (Flask, Flask-CORS, Werkzeug)
+├── vercel.json           # Vercel deployment configuration & API rewrites
 ├── .gitignore            # Git ignore configuration
+│
+├── api/
+│   └── index.py          # Serverless Python entrypoint for Vercel deployment
 │
 ├── index.html            # Landing page — hero, live stats, recent items
 ├── items.html            # Searchable items directory with filter controls
@@ -109,6 +113,15 @@ lost-and-found/
 ├── uploads/              # User-uploaded item images (gitignored)
 └── lost_and_found.db     # SQLite database (auto-generated, gitignored)
 ```
+
+---
+
+## ☁️ Deployment on Vercel
+
+The application is fully configured for zero-config Vercel deployment:
+1. Push your repository to GitHub.
+2. In Vercel, click **Add New Project** → Import `lost-and-found`.
+3. Vercel automatically deploys the static frontend to its global CDN and routes `/api/*` to the Python serverless function `api/index.py`.
 
 ---
 

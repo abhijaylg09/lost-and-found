@@ -819,6 +819,96 @@ function initGlowBorders() {
     });
 }
 
+// ---------------- Offline / Serverless Fallback Data ----------------
+
+const LF_DEFAULT_ITEMS = [
+    {
+        id: 1,
+        title: "Black Leather Wallet",
+        category: "Accessories",
+        type: "lost",
+        location: "Library 2nd Floor Study Room",
+        item_date: "2026-09-28",
+        description: "Contains college student ID, driving license, and blue metro card. Reward offered for return.",
+        contact: "abelgsubi123@gmail.com",
+        status: "open"
+    },
+    {
+        id: 2,
+        title: "Apple AirPods Pro (2nd Gen)",
+        category: "Electronics",
+        type: "found",
+        location: "Campus Cafeteria - Corner Booth",
+        item_date: "2026-09-29",
+        description: "Found on the table in a white charging case with a small sticker on back.",
+        contact: "abelgsubi123@gmail.com",
+        status: "open"
+    },
+    {
+        id: 3,
+        title: "Calculus & Linear Algebra Textbook",
+        category: "Books",
+        type: "lost",
+        location: "Science Block Room 302",
+        item_date: "2026-09-30",
+        description: "Hardcover 11th edition. Has handwritten notes and yellow highlighter markings.",
+        contact: "abelgsubi123@gmail.com",
+        status: "open"
+    },
+    {
+        id: 4,
+        title: "Silver Keychain with 4 Keys",
+        category: "Other",
+        type: "found",
+        location: "Gym Locker Area / Entrance",
+        item_date: "2026-10-01",
+        description: "Set of brass and silver keys attached to a blue car fob and mini carabiner.",
+        contact: "abelgsubi123@gmail.com",
+        status: "open"
+    },
+    {
+        id: 5,
+        title: "Blue Hydro Flask Water Bottle",
+        category: "Accessories",
+        type: "found",
+        location: "Auditorium Row F",
+        item_date: "2026-10-01",
+        description: "32oz navy blue bottle with outdoors/national park stickers.",
+        contact: "abelgsubi123@gmail.com",
+        status: "resolved"
+    }
+];
+
+function getLocalOrFallbackItems(filters = {}) {
+    let all = [];
+    try {
+        const stored = localStorage.getItem('lf_custom_items');
+        if (stored) {
+            all = JSON.parse(stored);
+        }
+    } catch (e) {}
+    all = [...all, ...LF_DEFAULT_ITEMS];
+
+    if (filters.type && filters.type !== 'all') {
+        all = all.filter(i => i.type === filters.type);
+    }
+    if (filters.category && filters.category !== 'all') {
+        all = all.filter(i => i.category.toLowerCase() === filters.category.toLowerCase());
+    }
+    if (filters.status && filters.status !== 'all') {
+        all = all.filter(i => i.status === filters.status);
+    }
+    if (filters.search) {
+        const q = filters.search.toLowerCase();
+        all = all.filter(i => 
+            (i.title && i.title.toLowerCase().includes(q)) ||
+            (i.description && i.description.toLowerCase().includes(q)) ||
+            (i.location && i.location.toLowerCase().includes(q))
+        );
+    }
+    return all;
+}
+
 // ---------------- Initialize on DOM Ready ----------------
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -207,6 +207,28 @@
                     submitBtn.textContent = originalText;
                 }
             } catch (err) {
+                // If offline / serverless delayed, save to localStorage as fallback
+                try {
+                    const fallbackItem = {
+                        id: Date.now(),
+                        title: this.title.value || "Reported Item",
+                        category: this.category.value,
+                        type: this.type.value,
+                        location: this.location.value,
+                        item_date: this.date.value || new Date().toISOString().split('T')[0],
+                        description: this.description.value,
+                        contact: this.contact.value,
+                        status: 'open'
+                    };
+                    const stored = JSON.parse(localStorage.getItem('lf_custom_items') || '[]');
+                    stored.unshift(fallbackItem);
+                    localStorage.setItem('lf_custom_items', JSON.stringify(stored));
+                    showToast("Report saved! Redirecting to directory...");
+                    setTimeout(() => {
+                        window.location.href = "items.html";
+                    }, 1000);
+                    return;
+                } catch(e) {}
                 showToast("Network error submitting report", "error");
                 submitBtn.disabled = false;
                 submitBtn.textContent = originalText;

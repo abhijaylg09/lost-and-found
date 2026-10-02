@@ -2,21 +2,35 @@ import sqlite3
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
-DB_DIR = os.path.dirname(__file__)
+DB_DIR = os.path.dirname(os.path.abspath(__file__))
 
-# On Vercel, use /tmp since the filesystem is read-only except /tmp
-if os.environ.get("VERCEL"):
-    DB_PATH = "/tmp/lost_and_found.db"
-else:
-    DB_PATH = os.path.join(DB_DIR, "lost_and_found.db")
+def get_db_path():
+    # On Vercel or read-only filesystems, use /tmp
+    if os.environ.get("VERCEL") or not os.access(DB_DIR, os.W_OK):
+        return "/tmp/lost_and_found.db"
+    return os.path.join(DB_DIR, "lost_and_found.db")
+
+DB_PATH = get_db_path()
 
 def get_db():
+    global DB_PATH
+    DB_PATH = get_db_path()
+    needs_init = not os.path.exists(DB_PATH)
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
+    if needs_init:
+        init_db(existing_conn=conn)
     return conn
 
-def init_db():
-    conn = get_db()
+def init_db(existing_conn=None):
+    should_close = False
+    if existing_conn:
+        conn = existing_conn
+    else:
+        conn = sqlite3.connect(get_db_path())
+        conn.row_factory = sqlite3.Row
+        should_close = True
+
     cursor = conn.cursor()
     
     # Create users table
@@ -116,7 +130,8 @@ def init_db():
         """, sample_items)
         conn.commit()
 
-    conn.close()
+    if should_close:
+        conn.close()
 
 if __name__ == "__main__":
     init_db()

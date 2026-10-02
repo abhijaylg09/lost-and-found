@@ -170,101 +170,103 @@
 
     <script src="app.js"></script>
     <script>
+        function renderRecentItems(items) {
+            const container = document.getElementById('recentItemsGrid');
+            if (!items || items.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="8" y1="12" x2="16" y2="12"></line>
+                        </svg>
+                        <h3>No active items right now</h3>
+                        <p>Be the first one to post a lost or found report in your area!</p>
+                        <a href="report.html" class="button browse-button">Report Item</a>
+                    </div>
+                `;
+                return;
+            }
+
+            const recent = items.slice(0, 6);
+            container.innerHTML = recent.map((item, index) => {
+                const typeClass = item.type === 'lost' ? 'lost' : 'found';
+                const typeLabel = item.type === 'lost' ? 'Lost' : 'Found';
+                const imageHtml = item.image_url 
+                    ? `<img src="${item.image_url}" alt="${escapeHtml(item.title)}">`
+                    : getCategorySVG(item.category);
+
+                return `
+                    <div class="item-card" style="animation-delay: ${index * 60}ms;">
+                        <div class="item-card-image-wrap">
+                            <div class="item-badge-top">
+                                <span class="status-badge ${typeClass}">${typeLabel}</span>
+                            </div>
+                            ${imageHtml}
+                        </div>
+                        <div class="item-card-body">
+                            <div class="item-category-tag">${escapeHtml(item.category)}</div>
+                            <h3 class="item-card-title">${escapeHtml(item.title)}</h3>
+                            <p class="item-card-desc">${escapeHtml(item.description || "No description provided.")}</p>
+                            
+                            <div class="item-meta-row">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                    <circle cx="12" cy="10" r="3"></circle>
+                                </svg>
+                                <span>${escapeHtml(item.location)}</span>
+                            </div>
+                            <div class="item-meta-row">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                    <line x1="16" y1="2" x2="16" y2="6"></line>
+                                    <line x1="8" y1="2" x2="8" y2="6"></line>
+                                    <line x1="3" y1="10" x2="21" y2="10"></line>
+                                </svg>
+                                <span>${escapeHtml(item.item_date)}</span>
+                            </div>
+                            
+                            <div class="item-card-footer">
+                                <button class="btn-card-details" onclick='openItemModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                                    View Details & Contact
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
         async function loadStats() {
             try {
                 const res = await fetch('/api/stats');
+                if (!res.ok) throw new Error("Stats API unavailable");
                 const data = await res.json();
                 
                 animateNumber(document.getElementById('statLost'), 0, data.lost, 1000);
                 animateNumber(document.getElementById('statFound'), 0, data.found, 1000);
                 animateNumber(document.getElementById('statResolved'), 0, data.resolved, 1000);
             } catch (err) {
-                console.error("Failed to load stats:", err);
+                const fallbackList = typeof getLocalOrFallbackItems === 'function' ? getLocalOrFallbackItems() : [];
+                const lostCount = fallbackList.filter(i => i.type === 'lost' && i.status === 'open').length;
+                const foundCount = fallbackList.filter(i => i.type === 'found' && i.status === 'open').length;
+                const resolvedCount = fallbackList.filter(i => i.status === 'resolved').length;
+                animateNumber(document.getElementById('statLost'), 0, lostCount || 2, 800);
+                animateNumber(document.getElementById('statFound'), 0, foundCount || 2, 800);
+                animateNumber(document.getElementById('statResolved'), 0, resolvedCount || 1, 800);
             }
         }
 
         async function loadRecentItems() {
-            const container = document.getElementById('recentItemsGrid');
             try {
                 const res = await fetch('/api/items?status=open');
+                if (!res.ok) throw new Error("Items API unavailable");
                 const items = await res.json();
-
-                if (!items || items.length === 0) {
-                    container.innerHTML = `
-                        <div class="empty-state">
-                            <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="8" y1="12" x2="16" y2="12"></line>
-                            </svg>
-                            <h3>No active items right now</h3>
-                            <p>Be the first one to post a lost or found report in your area!</p>
-                            <a href="report.html" class="button browse-button">Report Item</a>
-                        </div>
-                    `;
-                    return;
-                }
-
-                // Show up to 6 recent items with spotlight cards
-                const recent = items.slice(0, 6);
-                container.innerHTML = recent.map((item, index) => {
-                    const typeClass = item.type === 'lost' ? 'lost' : 'found';
-                    const typeLabel = item.type === 'lost' ? 'Lost' : 'Found';
-                    const imageHtml = item.image_url 
-                        ? `<img src="${item.image_url}" alt="${escapeHtml(item.title)}">`
-                        : getCategorySVG(item.category);
-
-                    return `
-                        <div class="item-card" style="animation-delay: ${index * 60}ms;">
-                            <div class="item-card-image-wrap">
-                                <div class="item-badge-top">
-                                    <span class="status-badge ${typeClass}">${typeLabel}</span>
-                                </div>
-                                ${imageHtml}
-                            </div>
-                            <div class="item-card-body">
-                                <div class="item-category-tag">${escapeHtml(item.category)}</div>
-                                <h3 class="item-card-title">${escapeHtml(item.title)}</h3>
-                                <p class="item-card-desc">${escapeHtml(item.description || "No description provided.")}</p>
-                                
-                                <div class="item-meta-row">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                                        <circle cx="12" cy="10" r="3"></circle>
-                                    </svg>
-                                    <span>${escapeHtml(item.location)}</span>
-                                </div>
-                                <div class="item-meta-row">
-                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                                        <line x1="16" y1="2" x2="16" y2="6"></line>
-                                        <line x1="8" y1="2" x2="8" y2="6"></line>
-                                        <line x1="3" y1="10" x2="21" y2="10"></line>
-                                    </svg>
-                                    <span>${escapeHtml(item.item_date)}</span>
-                                </div>
-                                
-                                <div class="item-card-footer">
-                                    <button class="btn-card-details" onclick='openItemModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
-                                        View Details & Contact
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                }).join('');
-
+                renderRecentItems(items);
             } catch (err) {
-                container.innerHTML = `
-                    <div class="empty-state">
-                        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-                            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
-                            <line x1="12" y1="8" x2="12" y2="12"></line>
-                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                        </svg>
-                        <h3>Could not load items</h3>
-                        <p>Server connection unavailable. Please check that the Flask server is running.</p>
-                    </div>
-                `;
+                const fallbackItems = typeof getLocalOrFallbackItems === 'function' 
+                    ? getLocalOrFallbackItems({ status: 'open' }) 
+                    : [];
+                renderRecentItems(fallbackItems);
             }
         }
 
