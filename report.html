@@ -1,221 +1,217 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta name="viewport"
-          content="width=device-width, initial-scale=1.0">
-
-    <title>Report Item - Lost & Found</title>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report an Item - Lost & Found</title>
     <link rel="stylesheet" href="style.css">
-
 </head>
-
-
 <body>
 
-
     <!-- Navigation -->
-
     <nav>
-
-        <div class="logo">
-            Lost & Found
-        </div>
+        <a href="index.html" class="logo-container">
+            <div class="logo-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div class="logo-text">Lost<span>&</span>Found</div>
+        </a>
 
         <div class="nav-links">
-
-            <a href="index.html">
-                Home
-            </a>
-
+            <a href="index.html">Home</a>
+            <a href="items.html">Directory</a>
+            <a href="report.html" class="active">Report Item</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html">Login</a>
         </div>
-
     </nav>
 
-
-
-    <!-- Report Form -->
-
+    <!-- Report Form Section -->
     <section class="section">
+        <div class="form-wrapper">
+            <div class="form-title-group">
+                <h2 id="formTitle">Report an Item</h2>
+                <p>Fill out the details below to log your report in the directory</p>
+            </div>
 
-        <h2 id="formTitle">
-            Report an Item
-        </h2>
-
-
-        <div class="form-container">
-
+            <!-- Report Type Toggle -->
+            <div class="type-toggle-container">
+                <button type="button" class="type-toggle-btn active lost" id="btnTypeLost" onclick="setType('lost')">
+                    I Lost an Item
+                </button>
+                <button type="button" class="type-toggle-btn" id="btnTypeFound" onclick="setType('found')">
+                    I Found an Item
+                </button>
+            </div>
 
             <form id="reportForm">
+                <input type="hidden" id="reportType" name="type" value="lost">
 
+                <div class="form-group">
+                    <label for="itemName">Item Name / Title *</label>
+                    <input type="text" id="itemName" name="title" class="form-control" placeholder="e.g. Blue Jansport Backpack, Silver Ring" required>
+                </div>
 
-                <label>
-                    Item Name
-                </label>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="category">Category *</label>
+                        <select id="category" name="category" class="form-control" required>
+                            <option value="Electronics">Electronics</option>
+                            <option value="Documents">Documents & IDs</option>
+                            <option value="Accessories">Accessories & Bags</option>
+                            <option value="Books">Books & Stationery</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
 
-                <input
-                    type="text"
-                    id="itemName"
-                    placeholder="Example: Black Wallet"
-                    required
-                >
+                    <div class="form-group">
+                        <label for="date">Date Lost / Found *</label>
+                        <input type="date" id="date" name="date" class="form-control" required>
+                    </div>
+                </div>
 
+                <div class="form-group">
+                    <label for="location">Location *</label>
+                    <input type="text" id="location" name="location" class="form-control" placeholder="e.g. Central Library, 2nd floor silent zone" required>
+                </div>
 
-                <label>
-                    Category
-                </label>
+                <div class="form-group">
+                    <label for="description">Detailed Description</label>
+                    <textarea id="description" name="description" rows="4" class="form-control" placeholder="Color, brand, distinguishing marks, scratches, contents..."></textarea>
+                </div>
 
-                <select id="category">
+                <!-- Photo Upload Section -->
+                <div class="form-group">
+                    <label>Item Photo (Optional)</label>
+                    <div class="photo-upload-zone" id="dropZone">
+                        <input type="file" id="imageInput" name="image" accept="image/*" onchange="previewImage(this)">
+                        <div id="uploadPrompt">
+                            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color: var(--primary); margin-bottom: 8px;">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="17 8 12 3 7 8"></polyline>
+                                <line x1="12" y1="3" x2="12" y2="15"></line>
+                            </svg>
+                            <div><strong style="color: var(--primary);">Click or drag photo here</strong></div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">PNG, JPG, WEBP up to 8MB</p>
+                        </div>
+                    </div>
+                    <div class="photo-preview-box" id="previewBox">
+                        <img id="imagePreview" src="" alt="Photo preview">
+                        <button type="button" class="btn-remove-preview" onclick="clearImagePreview()" title="Remove image">✕</button>
+                    </div>
+                </div>
 
-                    <option value="Electronics">
-                        Electronics
-                    </option>
+                <div class="form-group">
+                    <label for="contact">Contact Information *</label>
+                    <input type="text" id="contact" name="contact" class="form-control" placeholder="Your email address or phone number" required>
+                </div>
 
-                    <option value="Documents">
-                        Documents
-                    </option>
-
-                    <option value="Accessories">
-                        Accessories
-                    </option>
-
-                    <option value="Books">
-                        Books
-                    </option>
-
-                    <option value="Other">
-                        Other
-                    </option>
-
-                </select>
-
-
-                <label>
-                    Location
-                </label>
-
-                <input
-                    type="text"
-                    id="location"
-                    placeholder="Where was it lost/found?"
-                    required
-                >
-
-
-                <label>
-                    Date
-                </label>
-
-                <input
-                    type="date"
-                    id="date"
-                    required
-                >
-
-
-                <label>
-                    Description
-                </label>
-
-                <textarea
-                    id="description"
-                    rows="5"
-                    placeholder="Describe the item..."
-                ></textarea>
-
-
-                <label>
-                    Contact Information
-                </label>
-
-                <input
-                    type="text"
-                    id="contact"
-                    placeholder="Email or phone number"
-                    required
-                >
-
-
-                <button
-                    type="submit"
-                    class="submit-button"
-                >
+                <button type="submit" id="submitBtn" class="btn-submit-full">
                     Submit Report
                 </button>
-
-
             </form>
-
         </div>
-
     </section>
 
-
-
+    <!-- Footer -->
     <footer>
-
         <h3>Lost & Found</h3>
-
-        <p>
-            Helping people find what they've lost.
-        </p>
-
+        <p>Helping reconnect people with their belongings.</p>
+        <p>© 2026 Lost & Found. Built with Python & Flask.</p>
     </footer>
 
-
-
+    <script src="app.js"></script>
     <script>
+        // Set today's date as default
+        document.getElementById('date').valueAsDate = new Date();
 
-        // Detect whether the user selected Lost or Found
-
-        const params =
-            new URLSearchParams(window.location.search);
-
-        const type =
-            params.get("type");
-
-
-        // Change page title
-
-        if (type === "lost") {
-
-            document.getElementById("formTitle")
-                .textContent = "Report Lost Item";
-
+        // Check query parameters (?type=found or ?type=lost)
+        const params = new URLSearchParams(window.location.search);
+        const queryType = params.get('type');
+        if (queryType === 'found') {
+            setType('found');
+        } else {
+            setType('lost');
         }
 
-        else if (type === "found") {
+        function setType(type) {
+            const reportTypeInput = document.getElementById('reportType');
+            const btnLost = document.getElementById('btnTypeLost');
+            const btnFound = document.getElementById('btnTypeFound');
+            const formTitle = document.getElementById('formTitle');
+            const submitBtn = document.getElementById('submitBtn');
 
-            document.getElementById("formTitle")
-                .textContent = "Report Found Item";
+            reportTypeInput.value = type;
 
+            if (type === 'found') {
+                btnFound.className = 'type-toggle-btn active found';
+                btnLost.className = 'type-toggle-btn';
+                formTitle.textContent = "Report a Found Item";
+                submitBtn.textContent = "Publish Found Item Report";
+                submitBtn.style.background = "#10b981";
+            } else {
+                btnLost.className = 'type-toggle-btn active lost';
+                btnFound.className = 'type-toggle-btn';
+                formTitle.textContent = "Report a Lost Item";
+                submitBtn.textContent = "Publish Lost Item Report";
+                submitBtn.style.background = "#4f46e5";
+            }
         }
 
+        function previewImage(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('imagePreview').src = e.target.result;
+                    document.getElementById('previewBox').style.display = 'block';
+                    document.getElementById('uploadPrompt').style.display = 'none';
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function clearImagePreview() {
+            document.getElementById('imageInput').value = '';
+            document.getElementById('previewBox').style.display = 'none';
+            document.getElementById('uploadPrompt').style.display = 'block';
+        }
 
         // Form submission
+        document.getElementById('reportForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const submitBtn = document.getElementById('submitBtn');
+            const originalText = submitBtn.textContent;
+            submitBtn.disabled = true;
+            submitBtn.textContent = "Submitting report...";
 
-        document.getElementById("reportForm")
-            .addEventListener("submit", function(event) {
+            try {
+                const formData = new FormData(this);
+                const res = await fetch('/api/items', {
+                    method: 'POST',
+                    body: formData
+                });
 
-                event.preventDefault();
-
-                const itemName =
-                    document.getElementById("itemName").value;
-
-                alert(
-                    "Report submitted successfully!\n\n" +
-                    "Item: " + itemName
-                );
-
-            });
-
+                if (res.ok) {
+                    const newItem = await res.json();
+                    showToast("Item report published successfully!");
+                    setTimeout(() => {
+                        window.location.href = "items.html";
+                    }, 1200);
+                } else {
+                    const errData = await res.json();
+                    showToast(errData.error || "Failed to submit report", "error");
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = originalText;
+                }
+            } catch (err) {
+                showToast("Network error submitting report", "error");
+                submitBtn.disabled = false;
+                submitBtn.textContent = originalText;
+            }
+        });
     </script>
-
-
 </body>
-
 </html>

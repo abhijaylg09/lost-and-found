@@ -1,139 +1,277 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Lost & Found</title>
-
+    <title>Lost & Found - Campus & Community Directory</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
     <!-- Navigation Bar -->
     <nav>
-        <div class="logo">Lost & Found</div>
+        <a href="index.html" class="logo-container">
+            <div class="logo-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div class="logo-text">Lost<span>&</span>Found</div>
+        </a>
 
         <div class="nav-links">
-    		<a href="index.html">Home</a>
-    		<a href="#about">About</a>
-    		<a href="#items">Items</a>
-    		<a href="login.html">Login</a>
-	</div>
+            <a href="index.html" class="active">Home</a>
+            <a href="items.html">Directory</a>
+            <a href="report.html">Report Item</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html">Login</a>
+        </div>
     </nav>
-
 
     <!-- Hero Section -->
     <section class="hero">
-
         <div class="hero-text">
-
-            <h1>Lost something?<br>Found something?</h1>
-
+            <div class="hero-badge">
+                <span class="ticker-pulse"></span>
+                <span>Community Belongings Network</span>
+            </div>
+            <h1>Lost something?<br><span class="highlight">Found something?</span></h1>
             <p>
-                A simple place to report lost items,
-                find missing belongings, and help return
-                things to their owners.
+                A clean, collaborative directory for reporting missing personal belongings and safely returning found items to their rightful owners.
             </p>
 
-            <div class="buttons">
+            <!-- Live Stats Overview with Animated Numbers -->
+            <div class="stats-container" id="statsContainer">
+                <div class="stat-card">
+                    <div class="stat-number lost" id="statLost">0</div>
+                    <div class="stat-label">Active Lost</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number found" id="statFound">0</div>
+                    <div class="stat-label">Found Items</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number resolved" id="statResolved">0</div>
+                    <div class="stat-label">Reunited</div>
+                </div>
+            </div>
 
+            <div class="buttons">
                 <a href="report.html?type=lost" class="button lost-button">
                     Report Lost Item
                 </a>
-
                 <a href="report.html?type=found" class="button found-button">
                     Report Found Item
                 </a>
-
+                <a href="items.html" class="button browse-button">
+                    Browse All Items →
+                </a>
             </div>
 
-        </div>
+            <!-- Live Floating Showcase Cards -->
+            <div class="hero-showcase">
+                <div class="floating-showcase-card float-card-1">
+                    <div class="fsc-badge found">
+                        <span class="ticker-pulse"></span> Discovered Just Now
+                    </div>
+                    <div class="fsc-title">Apple AirPods Pro (2nd Gen)</div>
+                    <div class="fsc-meta">📍 Campus Cafeteria • Table 4</div>
+                </div>
 
+                <div class="floating-showcase-card float-card-2">
+                    <div class="fsc-badge lost">
+                        <span class="ticker-pulse" style="background: var(--lost-color);"></span> Reported Missing
+                    </div>
+                    <div class="fsc-title">Leather Card Wallet</div>
+                    <div class="fsc-meta">📍 Science Library • Reward Offered</div>
+                </div>
+
+                <div class="floating-showcase-card float-card-3">
+                    <div class="fsc-badge resolved">
+                        ✓ Reunited With Owner
+                    </div>
+                    <div class="fsc-title">TI-84 Graphing Calculator</div>
+                    <div class="fsc-meta">📍 Math Lab 104 • Claimed</div>
+                </div>
+            </div>
+        </div>
     </section>
 
-
-    <!-- How It Works -->
+    <!-- How It Works Section -->
     <section class="section" id="about">
-
-        <h2>How It Works</h2>
-
-        <div class="steps">
-
-            <div class="card">
-                <div class="icon">📝</div>
-                <h3>Report</h3>
-                <p>
-                    Report an item you have lost or found.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="icon">🔎</div>
-                <h3>Search</h3>
-                <p>
-                    Browse through reported items.
-                </p>
-            </div>
-
-            <div class="card">
-                <div class="icon">🤝</div>
-                <h3>Reconnect</h3>
-                <p>
-                    Help return lost belongings to their owners.
-                </p>
-            </div>
-
+        <div class="section-header">
+            <h2>How It Works</h2>
+            <p>A simple and transparent process to recover belongings</p>
         </div>
 
+        <div class="steps-grid">
+            <div class="step-card">
+                <div class="step-icon-wrapper">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                    </svg>
+                </div>
+                <h3>1. Submit a Report</h3>
+                <p>Post the item name, category, approximate date, discovery location, and an optional clear photo.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-icon-wrapper">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="11" cy="11" r="8"></circle>
+                        <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                    </svg>
+                </div>
+                <h3>2. Search & Filter</h3>
+                <p>Filter by location or category. Our directory updates live as community members log reports.</p>
+            </div>
+
+            <div class="step-card">
+                <div class="step-icon-wrapper">
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                </div>
+                <h3>3. Verify & Reconnect</h3>
+                <p>Reach out securely via email or phone, verify ownership details, and mark the item resolved.</p>
+            </div>
+        </div>
     </section>
 
+    <!-- Recently Reported Items Section -->
+    <section class="section" id="items" style="background-color: var(--card-bg); border-top: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color);">
+        <div class="section-header">
+            <h2>Recently Reported Items</h2>
+            <p>Latest active entries in the community directory</p>
+        </div>
 
-    <!-- Recent Items -->
-    <section class="section" id="items">
+        <div id="recentItemsGrid" class="items-grid">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                Loading recent items...
+            </div>
+        </div>
 
-        <h2>Recently Reported Items</h2>
-
-       
-               
-                <p>
-                    No reported items
-                </p>
-
-               
+        <div style="text-align: center; margin-top: 36px;">
+            <a href="items.html" class="button browse-button" style="padding: 13px 30px; font-size: 15px;">
+                View Full Directory →
+            </a>
+        </div>
     </section>
-
 
     <!-- Footer -->
     <footer>
-
         <h3>Lost & Found</h3>
-
-        <p>
-            Helping people find what they've lost.
-        </p>
-
-        <p>
-            © 2026 Lost & Found
-        </p>
-
+        <p>A community service dedicated to returning lost items.</p>
+        <p>© 2026 Lost & Found.</p>
     </footer>
 
-
+    <script src="app.js"></script>
     <script>
-
-        function showMessage() {
-
-            alert(
-                "Item details will be available here."
-            );
-
+        async function loadStats() {
+            try {
+                const res = await fetch('/api/stats');
+                const data = await res.json();
+                
+                animateNumber(document.getElementById('statLost'), 0, data.lost, 1000);
+                animateNumber(document.getElementById('statFound'), 0, data.found, 1000);
+                animateNumber(document.getElementById('statResolved'), 0, data.resolved, 1000);
+            } catch (err) {
+                console.error("Failed to load stats:", err);
+            }
         }
 
+        async function loadRecentItems() {
+            const container = document.getElementById('recentItemsGrid');
+            try {
+                const res = await fetch('/api/items?status=open');
+                const items = await res.json();
+
+                if (!items || items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="8" y1="12" x2="16" y2="12"></line>
+                            </svg>
+                            <h3>No active items right now</h3>
+                            <p>Be the first one to post a lost or found report in your area!</p>
+                            <a href="report.html" class="button browse-button">Report Item</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                // Show up to 6 recent items with spotlight cards
+                const recent = items.slice(0, 6);
+                container.innerHTML = recent.map((item, index) => {
+                    const typeClass = item.type === 'lost' ? 'lost' : 'found';
+                    const typeLabel = item.type === 'lost' ? 'Lost' : 'Found';
+                    const imageHtml = item.image_url 
+                        ? `<img src="${item.image_url}" alt="${escapeHtml(item.title)}">`
+                        : getCategorySVG(item.category);
+
+                    return `
+                        <div class="item-card" style="animation-delay: ${index * 60}ms;">
+                            <div class="item-card-image-wrap">
+                                <div class="item-badge-top">
+                                    <span class="status-badge ${typeClass}">${typeLabel}</span>
+                                </div>
+                                ${imageHtml}
+                            </div>
+                            <div class="item-card-body">
+                                <div class="item-category-tag">${escapeHtml(item.category)}</div>
+                                <h3 class="item-card-title">${escapeHtml(item.title)}</h3>
+                                <p class="item-card-desc">${escapeHtml(item.description || "No description provided.")}</p>
+                                
+                                <div class="item-meta-row">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span>${escapeHtml(item.location)}</span>
+                                </div>
+                                <div class="item-meta-row">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    <span>${escapeHtml(item.item_date)}</span>
+                                </div>
+                                
+                                <div class="item-card-footer">
+                                    <button class="btn-card-details" onclick='openItemModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                                        View Details & Contact
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <h3>Could not load items</h3>
+                        <p>Server connection unavailable. Please check that the Flask server is running.</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadStats();
+            loadRecentItems();
+        });
     </script>
-
 </body>
-
 </html>

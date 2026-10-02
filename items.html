@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directory - Lost & Found</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="logo-container">
+            <div class="logo-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div class="logo-text">Lost<span>&</span>Found</div>
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="items.html" class="active">Directory</a>
+            <a href="report.html">Report Item</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <!-- Header Section -->
+    <section class="section" style="padding-bottom: 20px;">
+        <div class="section-header">
+            <h2>Directory of Items</h2>
+            <p>Filter or search through all active lost and found reports</p>
+        </div>
+
+        <!-- Filter & Search Toolbar -->
+        <div class="filter-bar">
+            <div class="search-box">
+                <svg class="search-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="searchInput" placeholder="Search by title, location, or description..." oninput="debounceSearch()">
+            </div>
+
+            <div class="filter-group">
+                <div class="type-pills" id="typePills">
+                    <button class="pill-btn active" data-type="all" onclick="setTypeFilter('all')">All Items</button>
+                    <button class="pill-btn" data-type="lost" onclick="setTypeFilter('lost')">Lost</button>
+                    <button class="pill-btn" data-type="found" onclick="setTypeFilter('found')">Found</button>
+                </div>
+
+                <select id="categoryFilter" class="filter-select" onchange="loadItems()">
+                    <option value="all">All Categories</option>
+                    <option value="Electronics">Electronics</option>
+                    <option value="Documents">Documents & IDs</option>
+                    <option value="Accessories">Accessories</option>
+                    <option value="Books">Books</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <select id="statusFilter" class="filter-select" onchange="loadItems()">
+                    <option value="all">All Statuses</option>
+                    <option value="open" selected>Active Only</option>
+                    <option value="resolved">Reunited</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Grid Container -->
+        <div id="itemsContainer" class="items-grid">
+            <div style="grid-column: 1 / -1; text-align: center; padding: 40px; color: var(--text-muted);">
+                Loading directory items...
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <h3>Lost & Found</h3>
+        <p>A community service dedicated to returning lost items.</p>
+        <p>© 2026 Lost & Found.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        let currentType = 'all';
+        let searchTimeout = null;
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const typeParam = urlParams.get('type');
+        if (typeParam && ['lost', 'found'].includes(typeParam.toLowerCase())) {
+            currentType = typeParam.toLowerCase();
+            updatePillActive();
+        }
+
+        function setTypeFilter(type) {
+            currentType = type;
+            updatePillActive();
+            loadItems();
+        }
+
+        function updatePillActive() {
+            document.querySelectorAll('#typePills .pill-btn').forEach(btn => {
+                if (btn.getAttribute('data-type') === currentType) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        function debounceSearch() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(loadItems, 280);
+        }
+
+        async function loadItems() {
+            const container = document.getElementById('itemsContainer');
+            const search = document.getElementById('searchInput').value.trim();
+            const category = document.getElementById('categoryFilter').value;
+            const status = document.getElementById('statusFilter').value;
+
+            let url = `/api/items?type=${currentType}&category=${category}&status=${status}`;
+            if (search) {
+                url += `&search=${encodeURIComponent(search)}`;
+            }
+
+            try {
+                const res = await fetch(url);
+                const items = await res.json();
+
+                if (!items || items.length === 0) {
+                    container.innerHTML = `
+                        <div class="empty-state">
+                            <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <h3>No items match your criteria</h3>
+                            <p>Try clearing your keyword filters or check back later.</p>
+                            <a href="report.html" class="button browse-button">Report a New Item</a>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = items.map((item, index) => {
+                    const typeClass = item.type === 'lost' ? 'lost' : 'found';
+                    const typeLabel = item.type === 'lost' ? 'Lost' : 'Found';
+                    const isResolved = item.status === 'resolved';
+
+                    const badgeHtml = isResolved 
+                        ? `<span class="status-badge resolved">Reunited</span>`
+                        : `<span class="status-badge ${typeClass}">${typeLabel}</span>`;
+
+                    const imageHtml = item.image_url 
+                        ? `<img src="${item.image_url}" alt="${escapeHtml(item.title)}">`
+                        : getCategorySVG(item.category);
+
+                    return `
+                        <div class="item-card" style="animation-delay: ${Math.min(index * 50, 400)}ms;">
+                            <div class="item-card-image-wrap">
+                                <div class="item-badge-top">${badgeHtml}</div>
+                                ${imageHtml}
+                            </div>
+                            <div class="item-card-body">
+                                <div class="item-category-tag">${escapeHtml(item.category)}</div>
+                                <h3 class="item-card-title">${escapeHtml(item.title)}</h3>
+                                <p class="item-card-desc">${escapeHtml(item.description || "No description provided.")}</p>
+                                
+                                <div class="item-meta-row">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                                        <circle cx="12" cy="10" r="3"></circle>
+                                    </svg>
+                                    <span>${escapeHtml(item.location)}</span>
+                                </div>
+                                <div class="item-meta-row">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+                                        <line x1="16" y1="2" x2="16" y2="6"></line>
+                                        <line x1="8" y1="2" x2="8" y2="6"></line>
+                                        <line x1="3" y1="10" x2="21" y2="10"></line>
+                                    </svg>
+                                    <span>${escapeHtml(item.item_date)}</span>
+                                </div>
+                                
+                                <div class="item-card-footer">
+                                    <button class="btn-card-details" onclick='openItemModal(${JSON.stringify(item).replace(/'/g, "&#39;")})'>
+                                        View Details & Contact
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (err) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <svg class="empty-state-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+                            <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <h3>Error connecting to server</h3>
+                        <p>Please check your local Flask server status.</p>
+                    </div>
+                `;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadItems);
+    </script>
+</body>
+</html>

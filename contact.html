@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us - Lost & Found</title>
+    <meta name="description" content="Get in touch with the Lost & Found team. Have questions, suggestions, or need help? We'd love to hear from you.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <!-- Navigation -->
+    <nav>
+        <a href="index.html" class="logo-container">
+            <div class="logo-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div class="logo-text">Lost<span>&</span>Found</div>
+        </a>
+
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="items.html">Directory</a>
+            <a href="report.html">Report Item</a>
+            <a href="contact.html" class="active">Contact</a>
+            <a href="login.html">Login</a>
+        </div>
+    </nav>
+
+    <!-- Contact Hero -->
+    <section class="hero" style="padding: 60px 20px 40px;">
+        <div class="hero-text">
+            <div class="hero-badge">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>We're here to help</span>
+            </div>
+            <h1><span class="highlight">Get in Touch</span></h1>
+            <p>Have a question about an item, need support, or want to share feedback? Drop us a message and we'll get back to you promptly.</p>
+        </div>
+    </section>
+
+    <!-- Contact Content -->
+    <section class="section" style="padding-top: 20px;">
+
+        <!-- Contact Info Cards -->
+        <div class="contact-info-grid">
+            <div class="contact-info-card">
+                <div class="contact-info-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                        <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+                </div>
+                <h3>Email Us</h3>
+                <p>For general inquiries and support</p>
+                <a href="mailto:abelgsubi123@gmail.com" class="contact-info-link">abelgsubi123@gmail.com</a>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="contact-info-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                    </svg>
+                </div>
+                <h3>Call Us</h3>
+                <p>Mon – Fri, 9 AM to 6 PM</p>
+                <a href="tel:+918848911609" class="contact-info-link">+91 88489 11609</a>
+            </div>
+
+            <div class="contact-info-card">
+                <div class="contact-info-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                        <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+                </div>
+                <h3>Reach Abeluuuuu</h3>
+                <p>Campus Lost & Found Office</p>
+                <span class="contact-info-link">Student Center, Room 108</span>
+            </div>
+        </div>
+
+        <!-- Contact Form -->
+        <div class="contact-form-section">
+            <div class="form-wrapper" style="max-width: 720px;">
+                <div class="form-title-group">
+                    <h2>Send a Message</h2>
+                    <p>Fill out the form below and we'll respond within 24 hours.</p>
+                </div>
+
+                <form id="contactForm" onsubmit="submitContactForm(event)">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="contactName">Full Name</label>
+                            <input type="text" id="contactName" class="form-control" placeholder="Your name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactEmail">Email Address</label>
+                            <input type="email" id="contactEmail" class="form-control" placeholder="you@example.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactSubject">Subject</label>
+                        <select id="contactSubject" class="form-control" required>
+                            <option value="" disabled selected>Choose a topic...</option>
+                            <option value="lost-item">Help finding a lost item</option>
+                            <option value="found-item">I found an item</option>
+                            <option value="claim">Claim verification issue</option>
+                            <option value="account">Account / Login help</option>
+                            <option value="feedback">Feedback & suggestions</option>
+                            <option value="partnership">Partnership inquiry</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contactMessage">Message</label>
+                        <textarea id="contactMessage" class="form-control" rows="5" placeholder="Tell us how we can help..." required style="resize: vertical; min-height: 120px;"></textarea>
+                    </div>
+
+                    <button type="submit" class="btn-submit-full" id="contactSubmitBtn">
+                        <span id="contactBtnText">Send Message</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- FAQ Quick Section -->
+        <div class="contact-faq-section">
+            <div class="section-header" style="margin-bottom: 30px;">
+                <h2>Frequently Asked</h2>
+                <p>Quick answers to common questions</p>
+            </div>
+
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <div class="faq-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                    <h4>How do I claim a found item?</h4>
+                    <p>Browse the directory, find a match, and click "View Details" to see the contact information. Reach out to the finder directly to verify and arrange pickup.</p>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                        </svg>
+                    </div>
+                    <h4>Is my personal info safe?</h4>
+                    <p>Absolutely. Your contact details are only shown to authenticated users viewing item details. We never share data with third parties.</p>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                    </div>
+                    <h4>How long do listings stay active?</h4>
+                    <p>Items remain listed until the poster marks them as resolved. We recommend updating or closing your post once the item is recovered.</p>
+                </div>
+
+                <div class="faq-card">
+                    <div class="faq-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <h4>Do I need an account?</h4>
+                    <p>You can browse items without one. To post a report or contact a finder, creating a free account takes less than a minute.</p>
+                </div>
+            </div>
+        </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <h3>Lost & Found</h3>
+        <p>A community service dedicated to returning lost items.</p>
+        <p>© 2026 Lost & Found.</p>
+    </footer>
+
+    <script src="app.js"></script>
+    <script>
+        function submitContactForm(e) {
+            e.preventDefault();
+
+            const name = document.getElementById('contactName').value.trim();
+            const email = document.getElementById('contactEmail').value.trim();
+            const subject = document.getElementById('contactSubject').value;
+            const message = document.getElementById('contactMessage').value.trim();
+
+            if (!name || !email || !subject || !message) {
+                showToast('Please fill out all fields', 'error');
+                return;
+            }
+
+            const btn = document.getElementById('contactSubmitBtn');
+            const btnText = document.getElementById('contactBtnText');
+
+            // Animate button to loading state
+            btn.disabled = true;
+            btnText.textContent = 'Sending...';
+            btn.style.opacity = '0.7';
+
+            // Simulate sending (replace with real endpoint if available)
+            setTimeout(() => {
+                btn.style.opacity = '1';
+                btnText.textContent = '✓ Message Sent!';
+                btn.style.background = '#059669';
+
+                showToast(`Thanks ${name}! We'll get back to you soon.`);
+
+                // Reset form after delay
+                setTimeout(() => {
+                    document.getElementById('contactForm').reset();
+                    btn.disabled = false;
+                    btnText.textContent = 'Send Message';
+                    btn.style.background = '';
+                }, 3000);
+            }, 1200);
+        }
+    </script>
+</body>
+</html>

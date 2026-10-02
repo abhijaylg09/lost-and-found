@@ -1,99 +1,197 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Login - Lost & Found</title>
-
+    <title>Account Access - Lost & Found</title>
     <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
+    <!-- Navigation -->
     <nav>
-        <div class="logo">Lost & Found</div>
+        <a href="index.html" class="logo-container">
+            <div class="logo-icon-svg">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </div>
+            <div class="logo-text">Lost<span>&</span>Found</div>
+        </a>
 
         <div class="nav-links">
             <a href="index.html">Home</a>
+            <a href="items.html">Directory</a>
+            <a href="report.html">Report Item</a>
+            <a href="contact.html">Contact</a>
+            <a href="login.html" class="active">Login</a>
         </div>
     </nav>
 
-
+    <!-- Auth Section -->
     <section class="section">
+        <div class="form-wrapper" style="max-width: 480px;">
+            <div class="form-title-group">
+                <h2 id="authHeading">Welcome Back</h2>
+                <p id="authSubheading">Sign in to manage your reports and connect with finders</p>
+            </div>
 
-        <h2>Login</h2>
-
-        <div class="form-container">
-
-            <form id="loginForm">
-
-                <label>Email</label>
-
-                <input
-                    type="email"
-                    id="email"
-                    placeholder="Enter your email"
-                    required
-                >
-
-                <label>Password</label>
-
-                <input
-                    type="password"
-                    id="password"
-                    placeholder="Enter your password"
-                    required
-                >
-
-                <button
-                    type="submit"
-                    class="submit-button"
-                >
-                    Login
+            <!-- Tab Switcher -->
+            <div class="auth-tabs">
+                <button type="button" class="auth-tab-btn active" id="tabLogin" onclick="switchAuthTab('login')">
+                    Sign In
                 </button>
+                <button type="button" class="auth-tab-btn" id="tabRegister" onclick="switchAuthTab('register')">
+                    Create Account
+                </button>
+            </div>
 
+            <!-- Login Form -->
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="loginEmail">Email Address</label>
+                    <input type="email" id="loginEmail" class="form-control" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="loginPassword">Password</label>
+                    <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" required>
+                </div>
+
+                <button type="submit" id="loginBtn" class="btn-submit-full">
+                    Sign In
+                </button>
             </form>
 
-            <p class="login-note">
-                Don't have an account?
-                <a href="#">Register</a>
-            </p>
+            <!-- Register Form -->
+            <form id="registerForm" style="display: none;">
+                <div class="form-group">
+                    <label for="regName">Full Name</label>
+                    <input type="text" id="regName" class="form-control" placeholder="Alex Morgan" required>
+                </div>
 
+                <div class="form-group">
+                    <label for="regEmail">Email Address</label>
+                    <input type="email" id="regEmail" class="form-control" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="regPassword">Create Password</label>
+                    <input type="password" id="regPassword" class="form-control" placeholder="Minimum 6 characters" minlength="6" required>
+                </div>
+
+                <button type="submit" id="regBtn" class="btn-submit-full" style="background: #059669;">
+                    Create Account
+                </button>
+            </form>
         </div>
-
     </section>
 
-
+    <!-- Footer -->
     <footer>
-
         <h3>Lost & Found</h3>
-
-        <p>Helping people find what they've lost.</p>
-
+        <p>Helping reconnect people with their belongings.</p>
+        <p>© 2026 Lost & Found. Built with Python & Flask.</p>
     </footer>
 
-
+    <script src="app.js"></script>
     <script>
+        function switchAuthTab(mode) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabLogin = document.getElementById('tabLogin');
+            const tabRegister = document.getElementById('tabRegister');
+            const heading = document.getElementById('authHeading');
+            const subheading = document.getElementById('authSubheading');
 
-        document.getElementById("loginForm")
-            .addEventListener("submit", function(event) {
+            if (mode === 'register') {
+                loginForm.style.display = 'none';
+                registerForm.style.display = 'block';
+                tabLogin.classList.remove('active');
+                tabRegister.classList.add('active');
+                heading.textContent = "Join Lost & Found";
+                subheading.textContent = "Register an account to keep track of your posts";
+            } else {
+                loginForm.style.display = 'block';
+                registerForm.style.display = 'none';
+                tabLogin.classList.add('active');
+                tabRegister.classList.remove('active');
+                heading.textContent = "Welcome Back";
+                subheading.textContent = "Sign in to manage your reports and connect with finders";
+            }
+        }
 
-                event.preventDefault();
+        // Login submission
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            const email = document.getElementById('loginEmail').value.trim();
+            const password = document.getElementById('loginPassword').value;
 
-                const email =
-                    document.getElementById("email").value;
+            btn.disabled = true;
+            btn.textContent = "Signing in...";
 
-                alert(
-                    "Login successful!\n\n" +
-                    "Welcome, " + email
-                );
+            try {
+                const res = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
 
-            });
+                const data = await res.json();
+                if (res.ok) {
+                    showToast(`Welcome back, ${data.name}!`);
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1000);
+                } else {
+                    showToast(data.error || "Login failed", "error");
+                    btn.disabled = false;
+                    btn.textContent = "Sign In";
+                }
+            } catch (err) {
+                showToast("Network error while connecting to server", "error");
+                btn.disabled = false;
+                btn.textContent = "Sign In";
+            }
+        });
 
+        // Register submission
+        document.getElementById('registerForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('regBtn');
+            const name = document.getElementById('regName').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const password = document.getElementById('regPassword').value;
+
+            btn.disabled = true;
+            btn.textContent = "Creating account...";
+
+            try {
+                const res = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    showToast("Account created successfully!");
+                    setTimeout(() => {
+                        window.location.href = "index.html";
+                    }, 1000);
+                } else {
+                    showToast(data.error || "Registration failed", "error");
+                    btn.disabled = false;
+                    btn.textContent = "Create Account";
+                }
+            } catch (err) {
+                showToast("Network error during registration", "error");
+                btn.disabled = false;
+                btn.textContent = "Create Account";
+            }
+        });
     </script>
-
 </body>
-
 </html>
