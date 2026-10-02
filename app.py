@@ -7,7 +7,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from database import get_db, init_db
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+
+# On Vercel, use /tmp for uploads since filesystem is read-only
+if os.environ.get("VERCEL"):
+    UPLOAD_FOLDER = "/tmp/uploads"
+else:
+    UPLOAD_FOLDER = os.path.join(BASE_DIR, "uploads")
+
 ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "gif", "webp"}
 
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)

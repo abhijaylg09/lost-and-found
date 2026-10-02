@@ -2,7 +2,13 @@ import sqlite3
 import os
 from werkzeug.security import generate_password_hash, check_password_hash
 
-DB_PATH = os.path.join(os.path.dirname(__file__), "lost_and_found.db")
+DB_DIR = os.path.dirname(__file__)
+
+# On Vercel, use /tmp since the filesystem is read-only except /tmp
+if os.environ.get("VERCEL"):
+    DB_PATH = "/tmp/lost_and_found.db"
+else:
+    DB_PATH = os.path.join(DB_DIR, "lost_and_found.db")
 
 def get_db():
     conn = sqlite3.connect(DB_PATH)
