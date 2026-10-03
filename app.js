@@ -23,10 +23,18 @@ function toggleTheme() {
 }
 
 function updateThemeToggleIcon(theme) {
-    const btn = document.getElementById('themeToggleBtn');
-    if (btn) {
-        btn.innerHTML = theme === 'dark' ? '☀️' : '🌙';
-        btn.setAttribute('title', `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`);
+    const desktopBtn = document.getElementById('themeToggleBtn');
+    const mobileBtn = document.getElementById('mobileThemeToggleBtn');
+    const icon = theme === 'dark' ? '☀️' : '🌙';
+    const title = `Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`;
+
+    if (desktopBtn) {
+        desktopBtn.innerHTML = icon;
+        desktopBtn.setAttribute('title', title);
+    }
+    if (mobileBtn) {
+        mobileBtn.innerHTML = icon;
+        mobileBtn.setAttribute('title', title);
     }
 }
 
@@ -51,6 +59,9 @@ function injectThemeButton() {
 // High-end cursor tracking spotlight found on Linear, Stripe, and Raycast
 
 function initSpotlightTracker() {
+    // Only track spotlight on devices with fine pointer (mouse/trackpad), not mobile touchscreens
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
     document.addEventListener('mousemove', (e) => {
         const cards = document.querySelectorAll('.item-card, .stat-card');
         cards.forEach(card => {
@@ -167,17 +178,23 @@ async function checkAuthNav() {
         
         const existingAuth = document.querySelector('.nav-auth-user');
         const loginLink = Array.from(navLinks.querySelectorAll('a')).find(a => a.textContent.trim().toLowerCase() === 'login');
+        const mobileLoginLink = document.getElementById('mobileNavLoginLink');
+        const mobileAuthSlot = document.getElementById('mobileAuthSlot');
 
         if (data.authenticated) {
             if (loginLink) loginLink.style.display = 'none';
+            if (mobileLoginLink) mobileLoginLink.style.display = 'none';
+
+            const initial = (data.name || data.email)[0].toUpperCase();
+            const displayName = data.name || data.email.split('@')[0];
+
             if (!existingAuth) {
                 const authDiv = document.createElement('div');
                 authDiv.className = 'nav-auth-user';
-                const initial = (data.name || data.email)[0].toUpperCase();
                 authDiv.innerHTML = `
                     <div class="user-badge">
                         <div class="user-avatar-sm">${initial}</div>
-                        <span>${data.name || data.email.split('@')[0]}</span>
+                        <span>${displayName}</span>
                     </div>
                     <button class="btn-nav-logout" onclick="logoutUser()">Logout</button>
                 `;
@@ -189,9 +206,23 @@ async function checkAuthNav() {
                     navLinks.appendChild(authDiv);
                 }
             }
+
+            if (mobileAuthSlot) {
+                mobileAuthSlot.innerHTML = `
+                    <div class="mobile-nav-user-box">
+                        <div class="user-badge" style="border: none; padding: 0; background: none; box-shadow: none;">
+                            <div class="user-avatar-sm">${initial}</div>
+                            <span>${displayName}</span>
+                        </div>
+                        <button class="btn-nav-logout" onclick="logoutUser()">Logout</button>
+                    </div>
+                `;
+            }
         } else {
             if (existingAuth) existingAuth.remove();
             if (loginLink) loginLink.style.display = 'inline-block';
+            if (mobileLoginLink) mobileLoginLink.style.display = 'flex';
+            if (mobileAuthSlot) mobileAuthSlot.innerHTML = '';
         }
     } catch (err) {
         console.warn("Auth check failed:", err);
@@ -422,7 +453,7 @@ function initLiveSparkles() {
         mouseY = e.clientY;
     });
 
-    const sparkleCount = Math.floor(Math.min(width, 1600) / 18);
+    const sparkleCount = window.innerWidth < 768 ? 24 : Math.floor(Math.min(width, 1600) / 18);
     const sparkles = [];
 
     const darkColors = ['#fde047', '#38bdf8', '#c084fc', '#4ade80', '#ffffff'];
@@ -587,6 +618,9 @@ function autoTagRevealElements() {
 // Gives cards a subtle 3D rotation that follows the cursor
 
 function initMagneticTilt() {
+    // Only enable magnetic tilt on devices with mouse/fine pointer
+    if (!window.matchMedia('(pointer: fine)').matches) return;
+
     const cards = document.querySelectorAll('.stat-card, .step-card, .floating-showcase-card');
 
     cards.forEach(card => {
@@ -734,6 +768,13 @@ function initParallaxScroll() {
 function initPageTransition() {
     document.body.classList.add('page-transition-in');
 
+    // Apple iOS Safari & Android BFCache fix: restore page when navigating back/forward
+    window.addEventListener('pageshow', (event) => {
+        document.body.style.opacity = '1';
+        document.body.style.transform = 'none';
+        document.body.classList.add('page-transition-in');
+    });
+
     // Smooth link transitions
     document.addEventListener('click', (e) => {
         const link = e.target.closest('a[href]');
@@ -741,16 +782,19 @@ function initPageTransition() {
 
         const href = link.getAttribute('href');
         // Only handle internal navigation, not anchors or external links
-        if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('javascript:')) return;
+        if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:') || href.startsWith('tel:') || href.startsWith('javascript:')) return;
+
+        // Skip if modifier key or opening new tab
+        if (e.metaKey || e.ctrlKey || e.shiftKey || link.target === '_blank') return;
 
         e.preventDefault();
-        document.body.style.transition = 'opacity 0.25s ease, transform 0.25s ease';
+        document.body.style.transition = 'opacity 0.2s ease, transform 0.2s ease';
         document.body.style.opacity = '0';
-        document.body.style.transform = 'translateY(-8px)';
+        document.body.style.transform = 'translateY(-6px)';
 
         setTimeout(() => {
             window.location.href = href;
-        }, 220);
+        }, 180);
     });
 }
 
@@ -909,11 +953,165 @@ function getLocalOrFallbackItems(filters = {}) {
     return all;
 }
 
+// ---------------- Responsive Mobile Navigation System ----------------
+
+function initResponsiveNav() {
+    const nav = document.querySelector('nav');
+    if (!nav) return;
+
+    // 1. Ensure Hamburger Button exists in Nav
+    let hamburgerBtn = document.getElementById('navHamburgerBtn');
+    if (!hamburgerBtn) {
+        hamburgerBtn = document.createElement('button');
+        hamburgerBtn.id = 'navHamburgerBtn';
+        hamburgerBtn.className = 'nav-hamburger-btn';
+        hamburgerBtn.type = 'button';
+        hamburgerBtn.setAttribute('aria-label', 'Toggle Navigation Menu');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+        hamburgerBtn.innerHTML = `
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+            <span class="hamburger-bar"></span>
+        `;
+        nav.appendChild(hamburgerBtn);
+    }
+
+    // 2. Ensure Backdrop exists
+    let backdrop = document.getElementById('mobileNavBackdrop');
+    if (!backdrop) {
+        backdrop = document.createElement('div');
+        backdrop.id = 'mobileNavBackdrop';
+        backdrop.className = 'mobile-nav-backdrop';
+        document.body.appendChild(backdrop);
+    }
+
+    // 3. Ensure Drawer exists
+    let drawer = document.getElementById('mobileNavDrawer');
+    if (!drawer) {
+        drawer = document.createElement('aside');
+        drawer.id = 'mobileNavDrawer';
+        drawer.className = 'mobile-nav-drawer';
+        drawer.setAttribute('aria-label', 'Mobile Navigation');
+
+        const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+        const isHome = currentPath === 'index.html' || currentPath === '';
+        const isItems = currentPath === 'items.html';
+        const isReport = currentPath === 'report.html';
+        const isContact = currentPath === 'contact.html';
+        const isLogin = currentPath === 'login.html';
+
+        drawer.innerHTML = `
+            <div class="mobile-nav-header">
+                <a href="index.html" class="logo-container">
+                    <div class="logo-icon-svg">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </div>
+                    <div class="logo-text">Lost<span>&</span>Found</div>
+                </a>
+                <button class="mobile-nav-close" id="mobileNavClose" type="button" aria-label="Close Navigation">✕</button>
+            </div>
+
+            <div class="mobile-nav-links">
+                <a href="index.html" class="${isHome ? 'active' : ''}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    Home
+                </a>
+                <a href="items.html" class="${isItems ? 'active' : ''}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    Directory
+                </a>
+                <a href="report.html" class="${isReport ? 'active' : ''}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"></path></svg>
+                    Report Item
+                </a>
+                <a href="contact.html" class="${isContact ? 'active' : ''}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    Contact
+                </a>
+                <a href="login.html" class="${isLogin ? 'active' : ''}" id="mobileNavLoginLink">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+                    Login / Sign In
+                </a>
+            </div>
+
+            <div class="mobile-nav-actions">
+                <div class="mobile-theme-row">
+                    <span>Appearance</span>
+                    <button class="theme-toggle-btn" id="mobileThemeToggleBtn" type="button" onclick="toggleTheme()" aria-label="Toggle Theme">
+                        🌙
+                    </button>
+                </div>
+                <div id="mobileAuthSlot"></div>
+                <a href="report.html" class="button browse-button" style="text-align: center; width: 100%; padding: 12px; font-size: 14.5px;">
+                    + Report Lost / Found
+                </a>
+            </div>
+        `;
+        document.body.appendChild(drawer);
+    }
+
+    const closeBtn = document.getElementById('mobileNavClose');
+
+    function openNav() {
+        hamburgerBtn.classList.add('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'true');
+        backdrop.classList.add('active');
+        drawer.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeNav() {
+        hamburgerBtn.classList.remove('active');
+        hamburgerBtn.setAttribute('aria-expanded', 'false');
+        backdrop.classList.remove('active');
+        drawer.classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    hamburgerBtn.onclick = () => {
+        if (drawer.classList.contains('active')) {
+            closeNav();
+        } else {
+            openNav();
+        }
+    };
+
+    if (closeBtn) closeBtn.onclick = closeNav;
+    backdrop.onclick = closeNav;
+
+    // Close on ESC key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && drawer.classList.contains('active')) {
+            closeNav();
+        }
+    });
+
+    // Close on screen resize to desktop (> 768px)
+    window.addEventListener('resize', () => {
+        if (window.innerWidth > 768 && drawer.classList.contains('active')) {
+            closeNav();
+        }
+    });
+
+    // Close when clicking any drawer link
+    drawer.querySelectorAll('.mobile-nav-links a').forEach(a => {
+        a.addEventListener('click', closeNav);
+    });
+
+    // Sync theme icon to mobile drawer toggle button
+    const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+    updateThemeToggleIcon(currentTheme);
+}
+
 // ---------------- Initialize on DOM Ready ----------------
 
 document.addEventListener('DOMContentLoaded', () => {
     initTheme();
     injectThemeButton();
+    initResponsiveNav();
     injectAmbientAurora();
     initLiveSparkles();
     initSpotlightTracker();
@@ -921,7 +1119,7 @@ document.addEventListener('DOMContentLoaded', () => {
     checkAuthNav();
     setupDropZone('dropZone', 'imageInput');
 
-    // New live animation systems
+    // Live animation systems
     initPageTransition();
     initScrollReveal();
     initMagneticTilt();
@@ -934,4 +1132,5 @@ document.addEventListener('DOMContentLoaded', () => {
     initGlowBorders();
     initLogoLetterAnimation();
 });
+
 
